@@ -10,7 +10,11 @@ class List
   def add(task)
     @all_tasks << task
   end
+
   # Show all tasks
+  def show
+    all_tasks
+  end
   # Read a task from a file
   # Write a list to a file
   # Delete a task
@@ -29,9 +33,14 @@ class Task
 end
 
 #program runner
+
 if __FILE__ == $PROGRAM_NAME
-  my_list = List.new
-  puts "you have created a new list"
-  task_1 = my_list.add(Task.new("tidy up"))
-  puts "You have added a task to the Todo List"
+ my_list = List.new
+ puts 'You have created a new list'
+ my_list.add(Task.new('Go to the health shop'))
+ my_list.add(Task.new('Write another blog post'))
+ my_list.add('Finish off Ruby project')
+ puts 'You have added a task to the Todo List'
+ puts 'Your task list:'
+ puts my_list.show
 end
