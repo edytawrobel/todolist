@@ -3,11 +3,12 @@ module Menu
 
   def menu
     puts "Welcome to your ToDoList. \nPlease choose from the following list:
-    1. Add a task\n
-    2. Show a task list\n
-    3. Delete a task\n
-    4. Write to a File\n
-    5. Read from a File\n
+    1. Add\n
+    2. Show\n
+    3. Update\n
+    4. Delete\n
+    5. Write to File\n
+    6. Read from File\n
     Q. Quit\n"
   end
 
@@ -34,13 +35,15 @@ class List
 
   # Add tasks to list
   def add(task)
-    unless task.to_s.chomp.empty?
       all_tasks << task
-    end
   end
   # Show all tasks
   def show
-    all_tasks.each_with_index {|task, index| "(#{index.next}): #{task}" }
+    all_tasks.map.with_index { |l, i| "(#{i.next}): #{l}"}
+  end
+
+  def update(task_number, task)
+    all_tasks[task_number - 1] = task
   end
 
   def delete(task_number)
@@ -54,11 +57,10 @@ class List
 
   # Read from a file
   def read_from_file(filename)
-    IO.readlines(filename) { |line| add(Task.new(line.chomp)) }
+    IO.readlines(filename).each do |line|
+      add(Task.new(line.chomp))
+    end
   end
-
-  # Delete a task
-  # Update a task
 end
 
 # manages the behavior of each individual task
@@ -79,29 +81,29 @@ if __FILE__ == $PROGRAM_NAME
 include Menu
 include Promptable
   my_list = List.new
-  until ['q'].include?(user_input = prompt(Menu.show).downcase)
+  until ['q'].include?(user_input = prompt(show).downcase)
     case user_input
     when '1'
       my_list.add(Task.new(prompt("What is the task you would like to add?\n")))
     when '2'
       puts my_list.show
     when '3'
-      #update
+      my_list.update(prompt("What is the task you would like to update?\n").to_i, Task.new(prompt('enter your task description')))
     when '4'
       puts my_list.show
       my_list.delete(prompt("What is the task you would like to delete?\n").to_i)
     when '5'
-      my_list.write_to_file(prompt("what is the file you would like to write to?\n"))
+      my_list.write_to_file(prompt 'What is the filename to write to?')
     when '6'
       begin
-        my_list.read_from_file(prompt("what is the file you would like to read from?\n"))
+        my_list.read_from_file(prompt('What is the filename to read from?'))
       rescue Errno::ENOENT
-        puts "No such file or directory - please verify your file name and path"
+        puts 'File name not found, please verify your file name and path.'
       end
     else
       puts 'Try again, I did not catch that'
     end
-      prompt('Press enter to continue', '')
+    prompt('Press enter to continue', '')
   end
   puts 'Outro - Thanks for using our system!'
 end
