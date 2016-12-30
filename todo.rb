@@ -1,13 +1,24 @@
+#display tge menu
 module Menu
+
   def menu
-    puts "Welcome to your ToDoList. \n Here are your options: \n
+    puts "Welcome to your ToDoList. \nPlease choose from the following list:
     1. Add a task\n
     2. Show a task list\n
-    3. Quit \n"
+    3. Write to File\n
+    Q. Quit\n"
   end
 
   def show
     menu
+  end
+end
+
+module Promptable
+  def prompt(message = "What would you like to do next?", symbol = ":>")
+    print message
+    print symbol
+    gets.chomp
   end
 end
 
@@ -21,17 +32,17 @@ class List
 
   # Add tasks to list
   def add(task)
-    @all_tasks << task
+    all_tasks << task
   end
-
   # Show all tasks
   def show
     all_tasks
   end
 
-  #list menu
-  # Read a task from a file
   # Write a list to a file
+  def write_to_file(filename)
+    IO.write(filename, @all_tasks.map(&:to_s).join("\n"))
+  end
   # Delete a task
   # Update a task
 end
@@ -43,22 +54,29 @@ class Task
   def initialize(description)
     @description = description
   end
-#   Create a task item
+
+  def to_s
+    description
+  end
 end
-
-
-
-
-
 
 #program runner
 if __FILE__ == $PROGRAM_NAME
- my_list = List.new
- puts 'You have created a new list'
- my_list.add(Task.new('Go to the health shop'))
- my_list.add(Task.new('Write another blog post'))
- my_list.add('Finish off Ruby project')
- puts 'You have added a task to the Todo List'
- puts 'Here are your tasks:'
- puts my_list.show
+include Menu
+include Promptable
+  my_list = List.new
+  until ['q'].include?(user_input = prompt(show).downcase)
+    case user_input
+    when '1'
+      my_list.add(Task.new(prompt("What is the task you would like to add?\n")))
+    when '2'
+      puts my_list.show
+    when '3'
+      my_list.write_to_file(prompt("what is the file you would like to write to?\n"))
+    else
+      puts 'Try again, I did not catch that'
+    end
+      prompt('Press enter to continue', '')
+  end
+  puts 'Outro - Thanks for using our system!'
 end
