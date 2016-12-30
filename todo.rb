@@ -9,6 +9,7 @@ module Menu
     4. Delete\n
     5. Write to File\n
     6. Read from File\n
+    7. Toggle status\n
     Q. Quit\n"
   end
 
@@ -51,7 +52,7 @@ class List
   end
   # Write a list to a file
   def write_to_file(filename)
-      fl = @all_tasks.map(&:to_machine).join("\n"))
+      fl = @all_tasks.map(&:to_machine).join("\n")
       IO.write(filename, fl)
   end
 
@@ -62,6 +63,10 @@ class List
       status = status.include?('X')
       add(Task.new(description.join(':').strip, status))
     end
+  end
+
+  def toggle(task_number)
+    all_tasks[task_number - 1].toggle_status
   end
 end
 
@@ -87,9 +92,14 @@ class Task
     "#{represent_status} : #{description}"
   end
 
+  def toggle_status
+    @status = !completed?
+  end
+
   private
   def represent_status
      "#{(completed?) ? '[X]' : '[ ]'}"
+  end
 end
 
 #program runner
@@ -116,6 +126,9 @@ include Promptable
       rescue Errno::ENOENT
         puts 'File name not found, please verify your file name and path.'
       end
+    when '7'
+      puts my_list.show
+      my_list.toggle(prompt('Which would you like to toggle the status for?').to_i)
     else
       puts 'Try again, I did not catch that'
     end
