@@ -49,16 +49,18 @@ class List
   def delete(task_number)
     all_tasks.delete_at(task_number - 1)
   end
-
   # Write a list to a file
   def write_to_file(filename)
-    IO.write(filename, @all_tasks.map(&:to_s).join("\n"))
+      fl = @all_tasks.map(&:to_machine).join("\n"))
+      IO.write(filename, fl)
   end
 
-  # Read from a file
+  # read each line from the file, displaying both the description and the status
   def read_from_file(filename)
     IO.readlines(filename).each do |line|
-      add(Task.new(line.chomp))
+      status, *description = line.split(':')
+      status = status.include?('X')
+      add(Task.new(description.join(':').strip, status))
     end
   end
 end
@@ -66,14 +68,28 @@ end
 # manages the behavior of each individual task
 class Task
   attr_reader :description
+  attr_accessor :status
   #description upon creation of each instance
-  def initialize(description)
+  def initialize(description, status=false)
     @description = description
+    @status = status
   end
 
   def to_s
-    description
+    "#{represent_status} : #{description}"
   end
+
+  def completed?
+    status
+  end
+
+  def to_machine
+    "#{represent_status} : #{description}"
+  end
+
+  private
+  def represent_status
+     "#{(completed?) ? '[X]' : '[ ]'}"
 end
 
 #program runner
