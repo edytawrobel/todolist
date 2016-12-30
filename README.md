@@ -2,7 +2,7 @@
 use some of Ruby core features, such as classes, modules, methods to create a Todo List 
 - an object oriented program you can manipulate from the command line
 
-#design
+###design
 Firstly, building up primary user stories 
 to create a list, 
 add a task to the list, 
