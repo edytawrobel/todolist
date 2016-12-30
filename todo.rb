@@ -1,82 +1,97 @@
-#display tge menu
 module Menu
 
-  def menu
-    puts "Welcome to your ToDoList. \nPlease choose from the following list:
-    1. Add a task\n
-    2. Show a task list\n
-    3. Write to File\n
-    Q. Quit\n"
-  end
+   def menu
+     " Welcome to the TodoLister Program!
+     This menu will help you use the Task List System
+     1) Add
+     2) Show
+     3) Write to File
+     4) Read from File
+     Q) Quit "
+   end
 
-  def show
-    menu
-  end
+   def show
+     menu
+   end
+
 end
 
 module Promptable
-  def prompt(message = "What would you like to do next?", symbol = ":>")
-    print message
-    print symbol
-    gets.chomp
-  end
+   def prompt(message = "Just the facts, ma'am.", symbol = ':> ')
+     print message
+     print symbol
+     gets.chomp
+   end
 end
 
-# Create a list that manages the behavior of an individual list
-class List
-  attr_reader :all_tasks
+ class List
+   attr_reader :all_tasks
 
-  def initialize
-    @all_tasks = []
-  end
+   def initialize
+     @all_tasks = []
+   end
 
-  # Add tasks to list
-  def add(task)
-    all_tasks << task
-  end
-  # Show all tasks
-  def show
-    all_tasks
-  end
+   def add(task)
+     unless task.to_s.chomp.empty?
+       all_tasks << task
+     end
+   end
 
-  # Write a list to a file
-  def write_to_file(filename)
-    IO.write(filename, @all_tasks.map(&:to_s).join("\n"))
-  end
-  # Delete a task
-  # Update a task
-end
+   def show
+     all_tasks
+   end
 
-# manages the behavior of each individual task
-class Task
-  attr_reader :description
-  #description upon creation of each instance
-  def initialize(description)
-    @description = description
-  end
+   def write_to_file(filename)
+     IO.write(filename, @all_tasks.map(&:to_s).join("\n"))
+   end
 
-  def to_s
-    description
-  end
-end
+   def read_from_file(filename)
+     IO.readlines(filename).each do |line|
+       add(Task.new(line.chomp))
+     end
+   end
+ end
 
-#program runner
+ class Task
+   attr_reader :description
+
+   def initialize(description)
+     @description = description
+   end
+
+   def to_s
+     description
+   end
+ end
+
+
 if __FILE__ == $PROGRAM_NAME
-include Menu
-include Promptable
-  my_list = List.new
-  until ['q'].include?(user_input = prompt(show).downcase)
-    case user_input
-    when '1'
-      my_list.add(Task.new(prompt("What is the task you would like to add?\n")))
-    when '2'
-      puts my_list.show
-    when '3'
-      my_list.write_to_file(prompt("what is the file you would like to write to?\n"))
-    else
-      puts 'Try again, I did not catch that'
-    end
-      prompt('Press enter to continue', '')
-  end
-  puts 'Outro - Thanks for using our system!'
+ include Menu
+ include Promptable
+ my_list = List.new
+ puts 'Please choose from the following list'
+   until ['q'].include?(user_input = prompt(Menu.show).downcase)
+   case user_input
+     when '1'
+       my_list.add(Task.new(prompt('What is the task you
+       would like to accomplish?')))
+     when '2'
+       puts my_list.show
+     when '3'
+       my_list.write_to_file(prompt 'What is the filename to
+       write to?')
+     when '4'
+       begin
+         my_list.read_from_file(prompt('What is the filename to
+         read from?'))
+       rescue Errno::ENOENT
+         puts 'File name not found, please verify your file name
+         and path.'
+       end
+     else
+     puts 'Try again, I did not understand.'
+   end
+   prompt('Press enter to continue', '')
+ end
+puts 'Outro - Thanks for using the menu system!'
 end
