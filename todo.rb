@@ -5,8 +5,9 @@ module Menu
     puts "Welcome to your ToDoList. \nPlease choose from the following list:
     1. Add a task\n
     2. Show a task list\n
-    3. Write to a File\n
-    4. Read from a File\n
+    3. Delete a task\n
+    4. Write to a File\n
+    5. Read from a File\n
     Q. Quit\n"
   end
 
@@ -39,7 +40,11 @@ class List
   end
   # Show all tasks
   def show
-    all_tasks
+    all_tasks.each_with_index {|task, index| "(#{index.next}): #{task}" }
+  end
+
+  def delete(task_number)
+    all_tasks.delete_at(task_number - 1)
   end
 
   # Write a list to a file
@@ -81,8 +86,13 @@ include Promptable
     when '2'
       puts my_list.show
     when '3'
-      my_list.write_to_file(prompt("what is the file you would like to write to?\n"))
+      #update
     when '4'
+      puts my_list.show
+      my_list.delete(prompt("What is the task you would like to delete?\n").to_i)
+    when '5'
+      my_list.write_to_file(prompt("what is the file you would like to write to?\n"))
+    when '6'
       begin
         my_list.read_from_file(prompt("what is the file you would like to read from?\n"))
       rescue Errno::ENOENT
